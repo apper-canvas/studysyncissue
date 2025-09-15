@@ -1,0 +1,219 @@
+[
+  {
+    "Id": 1,
+    "courseId": 1,
+    "categoryName": "Assignments",
+    "weight": 30,
+    "assignments": [
+      {
+        "Id": 1,
+        "name": "Programming Assignment 1",
+        "grade": null,
+        "maxPoints": 100,
+        "completed": false
+      }
+    ]
+  },
+  {
+    "Id": 2,
+    "courseId": 1,
+    "categoryName": "Exams",
+    "weight": 50,
+    "assignments": [
+      {
+        "Id": 4,
+        "name": "Midterm Exam",
+        "grade": null,
+        "maxPoints": 200,
+        "completed": false
+      }
+    ]
+  },
+  {
+    "Id": 3,
+    "courseId": 1,
+    "categoryName": "Participation",
+    "weight": 20,
+    "assignments": [
+      {
+        "Id": 101,
+        "name": "Class Participation",
+        "grade": 85,
+        "maxPoints": 100,
+        "completed": true
+      }
+    ]
+  },
+  {
+    "Id": 4,
+    "courseId": 2,
+    "categoryName": "Homework",
+    "weight": 25,
+    "assignments": [
+      {
+        "Id": 2,
+        "name": "Derivative Worksheet",
+        "grade": 95,
+        "maxPoints": 100,
+        "completed": true
+      }
+    ]
+  },
+  {
+    "Id": 5,
+    "courseId": 2,
+    "categoryName": "Quizzes",
+    "weight": 25,
+    "assignments": [
+      {
+        "Id": 7,
+        "name": "Integration Quiz",
+        "grade": 92,
+        "maxPoints": 50,
+        "completed": true
+      }
+    ]
+  },
+  {
+    "Id": 6,
+    "courseId": 2,
+    "categoryName": "Exams",
+    "weight": 50,
+    "assignments": [
+      {
+        "Id": 102,
+        "name": "Midterm Exam",
+        "grade": 87,
+        "maxPoints": 100,
+        "completed": true
+      }
+    ]
+  },
+  {
+    "Id": 7,
+    "courseId": 3,
+    "categoryName": "Essays",
+    "weight": 60,
+    "assignments": [
+      {
+        "Id": 3,
+        "name": "Essay Draft",
+        "grade": null,
+        "maxPoints": 100,
+        "completed": false
+      },
+      {
+        "Id": 8,
+        "name": "Peer Review",
+        "grade": null,
+        "maxPoints": 25,
+        "completed": false
+      }
+    ]
+  },
+  {
+    "Id": 8,
+    "courseId": 3,
+    "categoryName": "Final Essay",
+    "weight": 40,
+    "assignments": [
+      {
+        "Id": 103,
+        "name": "Final Essay",
+        "grade": null,
+        "maxPoints": 150,
+        "completed": false
+      }
+    ]
+  },
+  {
+    "Id": 9,
+    "courseId": 4,
+    "categoryName": "Labs",
+    "weight": 30,
+    "assignments": [
+      {
+        "Id": 5,
+        "name": "Lab Report 2",
+        "grade": 88,
+        "maxPoints": 100,
+        "completed": true
+      }
+    ]
+  },
+  {
+    "Id": 10,
+    "courseId": 4,
+    "categoryName": "Exams",
+    "weight": 50,
+    "assignments": [
+      {
+        "Id": 104,
+        "name": "Midterm Exam",
+        "grade": 82,
+        "maxPoints": 100,
+        "completed": true
+      }
+    ]
+  },
+  {
+    "Id": 11,
+    "courseId": 4,
+    "categoryName": "Homework",
+    "weight": 20,
+    "assignments": [
+      {
+        "Id": 105,
+        "name": "Problem Set 1",
+        "grade": 90,
+        "maxPoints": 50,
+        "completed": true
+      }
+    ]
+  },
+  {
+    "Id": 12,
+    "courseId": 5,
+    "categoryName": "Projects",
+    "weight": 40,
+    "assignments": [
+      {
+        "Id": 6,
+        "name": "Museum Visit Report",
+        "grade": null,
+        "maxPoints": 75,
+        "completed": false
+      }
+    ]
+  },
+  {
+    "Id": 13,
+    "courseId": 5,
+    "categoryName": "Exams",
+    "weight": 40,
+    "assignments": [
+      {
+        "Id": 106,
+        "name": "Midterm Exam",
+        "grade": 91,
+        "maxPoints": 100,
+        "completed": true
+      }
+    ]
+  },
+  {
+    "Id": 14,
+    "courseId": 5,
+    "categoryName": "Participation",
+    "weight": 20,
+    "assignments": [
+      {
+        "Id": 107,
+        "name": "Class Discussion",
+        "grade": 95,
+        "maxPoints": 100,
+        "completed": true
+      }
+    ]
+  }
+]
