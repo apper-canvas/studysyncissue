@@ -1,0 +1,42 @@
+[
+  {
+    "Id": 1,
+    "subject": "Mathematics",
+    "duration": 3600,
+    "startTime": "2024-01-15T14:00:00.000Z",
+    "endTime": "2024-01-15T15:00:00.000Z",
+    "createdAt": "2024-01-15T15:00:00.000Z"
+  },
+  {
+    "Id": 2,
+    "subject": "Physics",
+    "duration": 2700,
+    "startTime": "2024-01-14T16:00:00.000Z",
+    "endTime": "2024-01-14T16:45:00.000Z",
+    "createdAt": "2024-01-14T16:45:00.000Z"
+  },
+  {
+    "Id": 3,
+    "subject": "Chemistry",
+    "duration": 5400,
+    "startTime": "2024-01-13T10:00:00.000Z",
+    "endTime": "2024-01-13T11:30:00.000Z",
+    "createdAt": "2024-01-13T11:30:00.000Z"
+  },
+  {
+    "Id": 4,
+    "subject": "Computer Science",
+    "duration": 4800,
+    "startTime": "2024-01-12T19:00:00.000Z",
+    "endTime": "2024-01-12T20:20:00.000Z",
+    "createdAt": "2024-01-12T20:20:00.000Z"
+  },
+  {
+    "Id": 5,
+    "subject": "History",
+    "duration": 1800,
+    "startTime": "2024-01-11T13:00:00.000Z",
+    "endTime": "2024-01-11T13:30:00.000Z",
+    "createdAt": "2024-01-11T13:30:00.000Z"
+  }
+]

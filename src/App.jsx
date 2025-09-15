@@ -6,17 +6,18 @@ import Courses from "@/components/pages/Courses";
 import Assignments from "@/components/pages/Assignments";
 import Grades from "@/components/pages/Grades";
 import Calendar from "@/components/pages/Calendar";
-
+import StudyTimer from "@/components/pages/StudyTimer";
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
+<Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="courses" element={<Courses />} />
           <Route path="assignments" element={<Assignments />} />
           <Route path="grades" element={<Grades />} />
           <Route path="calendar" element={<Calendar />} />
+          <Route path="study-timer" element={<StudyTimer />} />
         </Route>
       </Routes>
       

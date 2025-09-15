@@ -4,12 +4,13 @@ import { cn } from "@/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
 
 const MobileNavigation = ({ isOpen, onClose }) => {
-  const navigation = [
+const navigation = [
     { name: "Dashboard", href: "/", icon: "LayoutDashboard" },
     { name: "Courses", href: "/courses", icon: "BookOpen" },
     { name: "Assignments", href: "/assignments", icon: "FileText" },
     { name: "Grades", href: "/grades", icon: "Award" },
     { name: "Calendar", href: "/calendar", icon: "Calendar" },
+    { name: "Study Timer", href: "/study-timer", icon: "Clock" },
   ];
 
   return (

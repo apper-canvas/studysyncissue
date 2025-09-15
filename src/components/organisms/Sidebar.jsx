@@ -10,7 +10,8 @@ const Sidebar = () => {
     { name: "Courses", href: "/courses", icon: "BookOpen" },
     { name: "Assignments", href: "/assignments", icon: "FileText" },
     { name: "Grades", href: "/grades", icon: "Award" },
-    { name: "Calendar", href: "/calendar", icon: "Calendar" },
+{ name: "Calendar", href: "/calendar", icon: "Calendar" },
+    { name: "Study Timer", href: "/study-timer", icon: "Clock" },
   ];
 
   return (
