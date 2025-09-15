@@ -1,19 +1,19 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { toast } from 'react-toastify';
-import { courseService } from '@/services/api/courseService';
-import { studySessionService } from '@/services/api/studySessionService';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/atoms/Card';
-import Button from '@/components/atoms/Button';
-import Select from '@/components/atoms/Select';
-import FormField from '@/components/molecules/FormField';
-import ApperIcon from '@/components/ApperIcon';
-import Loading from '@/components/ui/Loading';
-import Error from '@/components/ui/Error';
-import Empty from '@/components/ui/Empty';
+import React, { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+import { courseService } from "@/services/api/courseService";
+import { studySessionService } from "@/services/api/studySessionService";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/Card";
+import ApperIcon from "@/components/ApperIcon";
+import FormField from "@/components/molecules/FormField";
+import Button from "@/components/atoms/Button";
+import Select from "@/components/atoms/Select";
+import Empty from "@/components/ui/Empty";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
 
 const StudyTimer = () => {
-  const [courses, setCourses] = useState([]);
+const [courses, setCourses] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState('');
   const [time, setTime] = useState(0);
@@ -22,8 +22,8 @@ const StudyTimer = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sessionsLoading, setSessionsLoading] = useState(false);
-  
-  const intervalRef = useRef(null);
+const intervalRef = useRef(null);
+  const startTimeRef = useRef(null);
 
   useEffect(() => {
     loadInitialData();
@@ -94,7 +94,7 @@ const StudyTimer = () => {
     return `${minutes}m`;
   };
 
-  const startTimer = () => {
+const startTimer = () => {
     if (!selectedSubject) {
       toast.error('Please select a subject before starting the timer');
       return;
@@ -102,20 +102,43 @@ const StudyTimer = () => {
     
     setIsRunning(true);
     setIsPaused(false);
+    startTimeRef.current = Date.now() - (time * 1000);
+    
+    intervalRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
+      setTime(elapsed);
+    }, 1000);
+    
     toast.success('Study session started!');
   };
 
-  const pauseTimer = () => {
+const pauseTimer = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
     setIsPaused(true);
     toast.info('Study session paused');
   };
 
   const resumeTimer = () => {
     setIsPaused(false);
-    toast.success('Study session resumed');
+    startTimeRef.current = Date.now() - (time * 1000);
+    
+    intervalRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
+      setTime(elapsed);
+    }, 1000);
+    
+    toast.success('Study session resumed!');
   };
 
-  const stopTimer = async () => {
+const stopTimer = async () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
     if (time === 0) {
       setIsRunning(false);
       setIsPaused(false);
@@ -146,8 +169,13 @@ const StudyTimer = () => {
     }
   };
 
-  const resetTimer = () => {
+const resetTimer = () => {
     if (window.confirm('Are you sure you want to reset the timer? This will lose your current session.')) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      
       setIsRunning(false);
       setIsPaused(false);
       setTime(0);
@@ -170,6 +198,16 @@ const StudyTimer = () => {
     }
   };
 
+  // Cleanup interval on component unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+
   if (loading) return <Loading />;
   if (error) return <Error message={error} />;
 
@@ -190,13 +228,18 @@ const StudyTimer = () => {
             Study Session Timer
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+<CardContent className="space-y-6">
           <div className="text-center">
             <div className="text-6xl font-mono font-bold text-primary-600 mb-4">
               {formatTime(time)}
             </div>
             <div className="text-sm text-gray-600">
               {isRunning ? (isPaused ? 'Paused' : 'Running') : 'Stopped'}
+              {selectedSubject && courses.find(c => c.Id === parseInt(selectedSubject)) && (
+                <span className="block mt-1 font-medium text-primary-600">
+                  {courses.find(c => c.Id === parseInt(selectedSubject)).courseName}
+                </span>
+              )}
             </div>
           </div>
 
@@ -205,6 +248,7 @@ const StudyTimer = () => {
               value={selectedSubject}
               onChange={(e) => setSelectedSubject(e.target.value)}
               disabled={isRunning}
+              className="w-full"
             >
               <option value="">Choose a subject...</option>
               {courses.map(course => (
@@ -250,43 +294,59 @@ const StudyTimer = () => {
         </CardContent>
       </Card>
 
-      {/* Session History */}
+{/* Session History */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ApperIcon name="History" size={20} />
             Study Session History
+            {sessions.length > 0 && (
+              <span className="text-sm font-normal text-gray-500 ml-auto">
+                {sessions.length} session{sessions.length !== 1 ? 's' : ''}
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {sessionsLoading ? (
             <Loading />
           ) : sessions.length === 0 ? (
-            <Empty message="No study sessions recorded yet" />
+            <Empty message="No study sessions recorded yet. Start your first study session above!" />
           ) : (
-            <div className="space-y-4">
-              {sessions.map((session) => (
+            <div className="space-y-3">
+              {sessions.slice(0, 10).map((session, index) => (
                 <motion.div
                   key={session.Id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  <div>
-                    <div className="font-medium text-gray-900">{session.subject}</div>
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-900 mb-1">{session.subject}</div>
                     <div className="text-sm text-gray-600">
-                      {formatDuration(session.duration)} • {new Date(session.endTime).toLocaleDateString()} at {new Date(session.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      <span className="font-medium text-primary-600">{formatDuration(session.duration)}</span>
+                      <span className="mx-2">•</span>
+                      <span>{new Date(session.endTime).toLocaleDateString()}</span>
+                      <span className="mx-2">•</span>
+                      <span>{new Date(session.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                   </div>
                   <Button
                     onClick={() => deleteSession(session.Id)}
                     variant="ghost"
                     size="sm"
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
                   >
                     <ApperIcon name="Trash2" size={16} />
                   </Button>
                 </motion.div>
               ))}
+              {sessions.length > 10 && (
+                <div className="text-center py-2 text-sm text-gray-500">
+                  Showing 10 most recent sessions
+                </div>
+              )}
             </div>
           )}
         </CardContent>

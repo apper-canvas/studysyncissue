@@ -1,4 +1,4 @@
-import mockSessions from '@/services/mockData/sessions.json';
+import mockSessions from "@/services/mockData/sessions.json";
 
 // In-memory storage for mock data
 let sessions = [...mockSessions];
@@ -43,31 +43,31 @@ export const studySessionService = {
   async update(id, updateData) {
     await new Promise(resolve => setTimeout(resolve, 400));
     
-    const index = sessions.findIndex(s => s.Id === parseInt(id));
-    if (index === -1) {
+    const sessionIndex = sessions.findIndex(s => s.Id === parseInt(id));
+    if (sessionIndex === -1) {
       throw new Error(`Study session with ID ${id} not found`);
     }
     
     const updatedSession = {
-      ...sessions[index],
+      ...sessions[sessionIndex],
       ...updateData,
-      Id: sessions[index].Id, // Ensure ID doesn't change
+      Id: parseInt(id), // Ensure ID doesn't change
       updatedAt: new Date().toISOString()
     };
     
-    sessions[index] = updatedSession;
+    sessions[sessionIndex] = updatedSession;
     return { ...updatedSession };
   },
 
   async delete(id) {
     await new Promise(resolve => setTimeout(resolve, 300));
     
-    const index = sessions.findIndex(s => s.Id === parseInt(id));
-    if (index === -1) {
+    const sessionIndex = sessions.findIndex(s => s.Id === parseInt(id));
+    if (sessionIndex === -1) {
       throw new Error(`Study session with ID ${id} not found`);
     }
     
-    const deletedSession = sessions.splice(index, 1)[0];
+const deletedSession = sessions.splice(sessionIndex, 1)[0];
     return { ...deletedSession };
   }
 };
