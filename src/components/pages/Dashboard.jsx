@@ -84,9 +84,8 @@ const Dashboard = () => {
   };
 
   const getCourseById = (courseId) => {
-    return courses.find(c => c.Id === courseId);
+return courses.find(c => c.Id === (courseId?.Id || courseId));
   };
-
   const completedAssignments = assignments.filter(a => a.completed).length;
   const totalAssignments = assignments.length;
   const completionRate = totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0;
@@ -182,9 +181,9 @@ const Dashboard = () => {
                   <p className="text-gray-600">All caught up! No upcoming assignments.</p>
                 </div>
               ) : (
-                upcomingAssignments.map((assignment) => {
-                  const course = getCourseById(assignment.courseId);
-                  const dueInfo = getDueDateInfo(assignment.dueDate);
+upcomingAssignments.map((assignment) => {
+                  const course = getCourseById(assignment.course_id_c);
+                  const dueInfo = getDueDateInfo(assignment.due_date_c);
                   
                   return (
                     <motion.div
@@ -194,13 +193,13 @@ const Dashboard = () => {
                       whileTap={{ scale: 0.99 }}
                     >
                       <div className="flex items-center space-x-4">
-                        <div 
+<div 
                           className="w-3 h-3 rounded-full" 
-                          style={{ backgroundColor: course?.color || "#6B7280" }}
+                          style={{ backgroundColor: course?.color_c || course?.color || "#6B7280" }}
                         ></div>
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-900">{assignment.title}</h4>
-                          <p className="text-sm text-gray-600">{course?.name}</p>
+                          <h4 className="font-medium text-gray-900">{assignment.title_c || assignment.Name}</h4>
+                          <p className="text-sm text-gray-600">{course?.name_c || course?.Name}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
@@ -342,16 +341,16 @@ const Dashboard = () => {
                       whileHover={{ scale: 1.01 }}
                       onClick={() => navigate(`/courses/${course.Id}`)}
                     >
-                      <div 
+<div 
                         className="w-4 h-4 rounded-full flex-shrink-0" 
-                        style={{ backgroundColor: course.color }}
+                        style={{ backgroundColor: course.color_c || course.color || '#6B7280' }}
                       ></div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
-                          {course.name}
+                          {course.name_c || course.Name || 'Untitled Course'}
                         </p>
                         <p className="text-xs text-gray-600 truncate">
-                          {course.instructor}
+                          {course.instructor_c || 'No Instructor'}
                         </p>
                       </div>
                       <Badge variant="secondary" className="text-xs">

@@ -31,15 +31,15 @@ const Assignments = () => {
   const [filterBy, setFilterBy] = useState("all");
   const [sortBy, setSortBy] = useState("dueDate");
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    courseId: "",
-    dueDate: "",
-    priority: "medium",
-    maxPoints: "",
-    type: "assignment",
-    submissionFormat: ""
+const [formData, setFormData] = useState({
+    title_c: "",
+    description_c: "",
+    course_id_c: "",
+    due_date_c: "",
+    priority_c: "medium",
+    max_points_c: "",
+    type_c: "assignment",
+    submission_format_c: ""
   });
 
   const priorityOptions = [
@@ -84,43 +84,43 @@ const Assignments = () => {
   }, []);
 
   useEffect(() => {
-    let filtered = assignments.filter(assignment => {
-      const matchesSearch = assignment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          assignment.description.toLowerCase().includes(searchTerm.toLowerCase());
+let filtered = assignments.filter(assignment => {
+      const matchesSearch = (assignment.title_c || assignment.Name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (assignment.description_c || '').toLowerCase().includes(searchTerm.toLowerCase());
       
       if (!matchesSearch) return false;
 
       switch (filterBy) {
         case "completed":
-          return assignment.completed;
+          return assignment.completed_c;
         case "pending":
-          return !assignment.completed && !isPast(parseISO(assignment.dueDate));
+          return !assignment.completed_c && !isPast(parseISO(assignment.due_date_c));
         case "overdue":
-          return !assignment.completed && isPast(parseISO(assignment.dueDate));
+          return !assignment.completed_c && isPast(parseISO(assignment.due_date_c));
         case "high":
-          return assignment.priority === "high";
+          return assignment.priority_c === "high";
         case "medium":
-          return assignment.priority === "medium";
+          return assignment.priority_c === "medium";
         case "low":
-          return assignment.priority === "low";
+          return assignment.priority_c === "low";
         default:
           return true;
       }
     });
 
     // Sort assignments
-    filtered.sort((a, b) => {
+filtered.sort((a, b) => {
       switch (sortBy) {
         case "dueDate":
-          return new Date(a.dueDate) - new Date(b.dueDate);
+          return new Date(a.due_date_c) - new Date(b.due_date_c);
         case "title":
-          return a.title.localeCompare(b.title);
+          return (a.title_c || a.Name || '').localeCompare(b.title_c || b.Name || '');
         case "priority":
           const priorityOrder = { high: 3, medium: 2, low: 1 };
-          return priorityOrder[b.priority] - priorityOrder[a.priority];
+          return priorityOrder[b.priority_c] - priorityOrder[a.priority_c];
         case "course":
-          const courseA = getCourseById(a.courseId)?.name || "";
-          const courseB = getCourseById(b.courseId)?.name || "";
+          const courseA = getCourseById(a.course_id_c?.Id || a.course_id_c)?.name_c || getCourseById(a.course_id_c?.Id || a.course_id_c)?.Name || "";
+          const courseB = getCourseById(b.course_id_c?.Id || b.course_id_c)?.name_c || getCourseById(b.course_id_c?.Id || b.course_id_c)?.Name || "";
           return courseA.localeCompare(courseB);
         default:
           return 0;
@@ -146,12 +146,12 @@ const Assignments = () => {
     e.preventDefault();
     
     try {
-      const assignmentData = {
+const assignmentData = {
         ...formData,
-        courseId: parseInt(formData.courseId),
-        maxPoints: parseInt(formData.maxPoints) || 100
+        course_id_c: parseInt(formData.course_id_c),
+        max_points_c: parseInt(formData.max_points_c) || 100
       };
-
+      
       if (editingAssignment) {
         await assignmentService.update(editingAssignment.Id, assignmentData);
         toast.success("Assignment updated successfully!");
@@ -170,14 +170,14 @@ const Assignments = () => {
   const handleEdit = (assignment) => {
     setEditingAssignment(assignment);
     setFormData({
-      title: assignment.title,
-      description: assignment.description,
-      courseId: assignment.courseId.toString(),
-      dueDate: assignment.dueDate.slice(0, 16), // Format for datetime-local input
-      priority: assignment.priority,
-      maxPoints: assignment.maxPoints.toString(),
-      type: assignment.type,
-      submissionFormat: assignment.submissionFormat || ""
+title_c: assignment.title_c || assignment.Name || '',
+      description_c: assignment.description_c || '',
+      course_id_c: (assignment.course_id_c?.Id || assignment.course_id_c || '').toString(),
+      due_date_c: (assignment.due_date_c || '').slice(0, 16), // Format for datetime-local input
+      priority_c: assignment.priority_c || 'medium',
+      max_points_c: (assignment.max_points_c || 100).toString(),
+      type_c: assignment.type_c || 'assignment',
+      submission_format_c: assignment.submission_format_c || ''
     });
     setShowAddForm(true);
   };
@@ -226,8 +226,10 @@ const Assignments = () => {
       return { variant: "completed", text: "Completed" };
     }
     
-    const due = parseISO(dueDate);
-    if (isPast(due)) {
+const due = parseISO(dueDate);
+    if (completed) {
+      return { variant: "success", text: "Completed" };
+    } else if (isPast(due)) {
       return { variant: "overdue", text: "Overdue" };
     } else if (isToday(due)) {
       return { variant: "danger", text: "Due Today" };
@@ -348,9 +350,9 @@ const Assignments = () => {
                         required
                       >
                         <option value="">Select a course</option>
-                        {courses.map(course => (
+{courses.map(course => (
                           <option key={course.Id} value={course.Id}>
-                            {course.code} - {course.name}
+                            {course.code_c || 'N/A'} - {course.name_c || course.Name || 'Untitled Course'}
                           </option>
                         ))}
                       </Select>
@@ -480,8 +482,8 @@ const Assignments = () => {
           transition={{ duration: 0.3 }}
         >
           {filteredAssignments.map((assignment, index) => {
-            const course = getCourseById(assignment.courseId);
-            const dueDateStatus = getDueDateStatus(assignment.dueDate, assignment.completed);
+const course = getCourseById(assignment.course_id_c?.Id || assignment.course_id_c);
+            const dueDateStatus = getDueDateStatus(assignment.due_date_c, assignment.completed_c);
             
             return (
               <motion.div
@@ -490,30 +492,30 @@ const Assignments = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.02 }}
               >
-                <Card className={`overflow-hidden transition-all duration-200 hover:shadow-lg ${assignment.completed ? "opacity-75" : ""}`}>
+<Card className={`overflow-hidden transition-all duration-200 hover:shadow-lg ${assignment.completed_c ? "opacity-75" : ""}`}>
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-4 flex-1">
                         <button
                           onClick={() => handleToggleComplete(assignment.Id)}
                           className={`mt-1 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                            assignment.completed 
+                            assignment.completed_c 
                               ? "bg-success-500 border-success-500 text-white" 
                               : "border-gray-300 hover:border-primary-500"
                           }`}
                         >
-                          {assignment.completed && (
+                          {assignment.completed_c && (
                             <ApperIcon name="Check" className="w-3 h-3" />
                           )}
                         </button>
                         
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center space-x-3 mb-2">
-                            <h3 className={`text-lg font-semibold ${assignment.completed ? "line-through text-gray-500" : "text-gray-900"}`}>
-                              {assignment.title}
+<h3 className={`text-lg font-semibold ${assignment.completed_c ? "line-through text-gray-500" : "text-gray-900"}`}>
+                              {assignment.title_c || assignment.Name || 'Untitled Assignment'}
                             </h3>
-                            <Badge variant={assignment.priority}>
-                              {assignment.priority}
+                            <Badge variant={assignment.priority_c}>
+                              {assignment.priority_c}
                             </Badge>
                             <Badge variant={dueDateStatus.variant}>
                               {dueDateStatus.text}
@@ -524,33 +526,33 @@ const Assignments = () => {
                             <div className="flex items-center">
                               <div 
                                 className="w-3 h-3 rounded-full mr-2" 
-                                style={{ backgroundColor: course?.color || "#6B7280" }}
+style={{ backgroundColor: course?.color_c || course?.color || "#6B7280" }}
                               ></div>
-                              <span>{course?.name || "Unknown Course"}</span>
+                              <span>{course?.name_c || course?.Name || "Unknown Course"}</span>
                             </div>
                             <div className="flex items-center">
                               <ApperIcon name="Clock" className="w-4 h-4 mr-1" />
-                              {format(parseISO(assignment.dueDate), "MMM d, yyyy 'at' h:mm a")}
+                              {format(parseISO(assignment.due_date_c), "MMM d, yyyy 'at' h:mm a")}
                             </div>
                             <div className="flex items-center">
                               <ApperIcon name="Award" className="w-4 h-4 mr-1" />
-                              {assignment.maxPoints} points
+                              {assignment.max_points_c} points
                             </div>
                           </div>
                           
-                          {assignment.description && (
+{assignment.description_c && (
                             <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                              {assignment.description}
+                              {assignment.description_c}
                             </p>
                           )}
                           
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4 text-xs text-gray-500">
                               <Badge variant="secondary" className="text-xs">
-                                {assignment.type}
+                                {assignment.type_c}
                               </Badge>
-                              {assignment.submissionFormat && (
-                                <span>{assignment.submissionFormat}</span>
+                              {assignment.submission_format_c && (
+                                <span>{assignment.submission_format_c}</span>
                               )}
                             </div>
                           </div>

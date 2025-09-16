@@ -63,9 +63,9 @@ const Calendar = () => {
     return courses.find(c => c.Id === courseId);
   };
 
-  const getAssignmentsForDate = (date) => {
+const getAssignmentsForDate = (date) => {
     return assignments.filter(assignment => 
-      isSameDay(parseISO(assignment.dueDate), date)
+      isSameDay(parseISO(assignment.due_date_c), date)
     );
   };
 
@@ -249,14 +249,14 @@ const Calendar = () => {
                         <div className="flex items-start space-x-3">
                           <div 
                             className="w-3 h-3 rounded-full mt-1 flex-shrink-0" 
-                            style={{ backgroundColor: course?.color || "#6B7280" }}
+style={{ backgroundColor: course?.color_c || course?.color || "#6B7280" }}
                           ></div>
                           <div className="flex-1 min-w-0">
                             <h4 className="font-medium text-gray-900 text-sm truncate">
-                              {assignment.title}
+                              {assignment.title_c || assignment.Name}
                             </h4>
                             <p className="text-xs text-gray-600 mb-1">
-                              {course?.name}
+                              {course?.name_c || course?.Name}
                             </p>
                             <div className="flex items-center space-x-2">
                               <Badge variant={assignment.priority} className="text-xs">
@@ -297,19 +297,19 @@ const Calendar = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Completed</span>
                   <span className="font-semibold text-success-600">
-                    {assignments.filter(a => a.completed).length}
+{assignments.filter(a => a.completed_c).length}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Pending</span>
                   <span className="font-semibold text-warning-600">
-                    {assignments.filter(a => !a.completed && !isPast(parseISO(a.dueDate))).length}
+                    {assignments.filter(a => !a.completed_c && !isPast(parseISO(a.due_date_c))).length}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Overdue</span>
                   <span className="font-semibold text-red-600">
-                    {assignments.filter(a => !a.completed && isPast(parseISO(a.dueDate))).length}
+                    {assignments.filter(a => !a.completed_c && isPast(parseISO(a.due_date_c))).length}
                   </span>
                 </div>
               </div>
@@ -326,11 +326,11 @@ const Calendar = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {courses.map(course => (
+{courses.map(course => (
                   <div key={course.Id} className="flex items-center space-x-3">
                     <div 
                       className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: course.color }}
+                      style={{ backgroundColor: course.color_c || course.color || '#6B7280' }}
                     ></div>
                     <span className="text-sm text-gray-700 truncate">
                       {course.code}

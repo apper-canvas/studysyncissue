@@ -54,6 +54,20 @@ const Sidebar = () => {
             );
           })}
         </nav>
+</div>
+      
+      {/* Logout Button */}
+      <div className="mt-auto pt-4 border-t border-gray-200">
+        <button
+          onClick={() => {
+            const { ApperUI } = window.ApperSDK;
+            ApperUI.logout();
+          }}
+          className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors group"
+        >
+          <ApperIcon name="LogOut" className="mr-3 h-5 w-5 text-gray-500 group-hover:text-gray-900" />
+          Logout
+        </button>
       </div>
     </div>
   );

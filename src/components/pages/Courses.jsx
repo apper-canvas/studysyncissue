@@ -1,20 +1,18 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
-
 import { courseService } from "@/services/api/courseService";
-
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/atoms/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/Card";
+import ApperIcon from "@/components/ApperIcon";
+import SearchBar from "@/components/molecules/SearchBar";
+import FormField from "@/components/molecules/FormField";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
-import Select from "@/components/atoms/Select";
 import Badge from "@/components/atoms/Badge";
-import FormField from "@/components/molecules/FormField";
-import SearchBar from "@/components/molecules/SearchBar";
-import ApperIcon from "@/components/ApperIcon";
+import Select from "@/components/atoms/Select";
+import Empty from "@/components/ui/Empty";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
-import Empty from "@/components/ui/Empty";
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
@@ -26,15 +24,15 @@ const Courses = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("name");
 
-  const [formData, setFormData] = useState({
-    name: "",
-    code: "",
-    instructor: "",
-    schedule: "",
-    credits: "",
-    color: "#3B82F6",
-    semester: "Fall 2024",
-    description: ""
+const [formData, setFormData] = useState({
+    name_c: "",
+    code_c: "",
+    instructor_c: "",
+    schedule_c: "",
+    credits_c: "",
+    color_c: "#3B82F6",
+    semester_c: "Fall 2024",
+    description_c: ""
   });
 
   const colorOptions = [
@@ -68,23 +66,23 @@ const Courses = () => {
   }, []);
 
   useEffect(() => {
-    let filtered = courses.filter(course =>
-      course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.instructor.toLowerCase().includes(searchTerm.toLowerCase())
+let filtered = courses.filter(course =>
+      (course.name_c || course.Name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (course.code_c || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (course.instructor_c || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Sort courses
+    // Apply sorting
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "name":
-          return a.name.localeCompare(b.name);
+          return (a.name_c || a.Name || '').localeCompare(b.name_c || b.Name || '');
         case "code":
-          return a.code.localeCompare(b.code);
+          return (a.code_c || '').localeCompare(b.code_c || '');
         case "instructor":
-          return a.instructor.localeCompare(b.instructor);
+          return (a.instructor_c || '').localeCompare(b.instructor_c || '');
         case "credits":
-          return b.credits - a.credits;
+          return (b.credits_c || 0) - (a.credits_c || 0);
         default:
           return 0;
       }
@@ -106,8 +104,8 @@ const Courses = () => {
     
     try {
       const courseData = {
-        ...formData,
-        credits: parseInt(formData.credits)
+...formData,
+        credits_c: parseInt(formData.credits_c)
       };
 
       if (editingCourse) {
@@ -128,14 +126,14 @@ const Courses = () => {
   const handleEdit = (course) => {
     setEditingCourse(course);
     setFormData({
-      name: course.name,
-      code: course.code,
-      instructor: course.instructor,
-      schedule: course.schedule,
-      credits: course.credits.toString(),
-      color: course.color,
-      semester: course.semester,
-      description: course.description || ""
+name_c: course.name_c || course.Name || '',
+      code_c: course.code_c || '',
+      instructor_c: course.instructor_c || '',
+      schedule_c: course.schedule_c || '',
+      credits_c: (course.credits_c || 0).toString(),
+      color_c: course.color_c || '#3B82F6',
+      semester_c: course.semester_c || '',
+      description_c: course.description_c || ''
     });
     setShowAddForm(true);
   };
@@ -154,21 +152,20 @@ const Courses = () => {
     }
   };
 
-  const resetForm = () => {
+const resetForm = () => {
     setFormData({
-      name: "",
-      code: "",
-      instructor: "",
-      schedule: "",
-      credits: "",
-      color: "#3B82F6",
-      semester: "Fall 2024",
-      description: ""
+      name_c: "",
+      code_c: "",
+      instructor_c: "",
+      schedule_c: "",
+      credits_c: "",
+      color_c: "#3B82F6",
+      semester_c: "Fall 2024",
+      description_c: ""
     });
     setEditingCourse(null);
     setShowAddForm(false);
   };
-
   const handleSearch = (term) => {
     setSearchTerm(term);
   };
@@ -247,10 +244,10 @@ const Courses = () => {
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField label="Course Name" required>
+<FormField label="Course Name" required>
                       <Input
-                        name="name"
-                        value={formData.name}
+                        name="name_c"
+                        value={formData.name_c}
                         onChange={handleInputChange}
                         placeholder="e.g., Introduction to Computer Science"
                         required
@@ -259,8 +256,8 @@ const Courses = () => {
                     
                     <FormField label="Course Code" required>
                       <Input
-                        name="code"
-                        value={formData.code}
+                        name="code_c"
+                        value={formData.code_c}
                         onChange={handleInputChange}
                         placeholder="e.g., CS101"
                         required
@@ -268,11 +265,11 @@ const Courses = () => {
                     </FormField>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField label="Instructor" required>
                       <Input
-                        name="instructor"
-                        value={formData.instructor}
+                        name="instructor_c"
+                        value={formData.instructor_c}
                         onChange={handleInputChange}
                         placeholder="e.g., Dr. Sarah Johnson"
                         required
@@ -281,8 +278,8 @@ const Courses = () => {
                     
                     <FormField label="Schedule" required>
                       <Input
-                        name="schedule"
-                        value={formData.schedule}
+                        name="schedule_c"
+                        value={formData.schedule_c}
                         onChange={handleInputChange}
                         placeholder="e.g., MWF 10:00-11:00 AM"
                         required
@@ -291,11 +288,11 @@ const Courses = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormField label="Credits" required>
+<FormField label="Credits" required>
                       <Input
                         type="number"
-                        name="credits"
-                        value={formData.credits}
+                        name="credits_c"
+                        value={formData.credits_c}
                         onChange={handleInputChange}
                         min="1"
                         max="6"
@@ -307,11 +304,11 @@ const Courses = () => {
                       <div className="flex items-center space-x-2">
                         <div
                           className="w-8 h-8 rounded-lg border border-gray-300"
-                          style={{ backgroundColor: formData.color }}
+                          style={{ backgroundColor: formData.color_c }}
                         ></div>
                         <Select
-                          name="color"
-                          value={formData.color}
+                          name="color_c"
+                          value={formData.color_c}
                           onChange={handleInputChange}
                         >
                           {colorOptions.map(option => (
@@ -325,8 +322,8 @@ const Courses = () => {
                     
                     <FormField label="Semester" required>
                       <Select
-                        name="semester"
-                        value={formData.semester}
+                        name="semester_c"
+                        value={formData.semester_c}
                         onChange={handleInputChange}
                         required
                       >
@@ -337,15 +334,14 @@ const Courses = () => {
                     </FormField>
                   </div>
 
-                  <FormField label="Description">
+<FormField label="Description">
                     <Input
-                      name="description"
-                      value={formData.description}
+                      name="description_c"
+                      value={formData.description_c}
                       onChange={handleInputChange}
                       placeholder="Brief description of the course"
                     />
                   </FormField>
-
                   <div className="flex space-x-3 pt-4">
                     <Button type="submit">
                       <ApperIcon name="Save" className="w-4 h-4 mr-2" />
@@ -388,20 +384,20 @@ const Courses = () => {
             >
               <Card className="h-full overflow-hidden hover:shadow-xl transition-shadow duration-300">
                 <div 
-                  className="h-2 w-full"
-                  style={{ backgroundColor: course.color }}
+className="h-2 w-full"
+                  style={{ backgroundColor: course.color_c || course.color || '#6B7280' }}
                 ></div>
-                <CardHeader className="pb-3">
+                <CardContent className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <Badge variant="secondary" className="mb-2 text-xs">
-                        {course.code}
+                        {course.code_c || 'N/A'}
                       </Badge>
                       <CardTitle className="text-lg leading-tight mb-1">
-                        {course.name}
+                        {course.name_c || course.Name || 'Untitled Course'}
                       </CardTitle>
                       <p className="text-sm text-gray-600">
-                        {course.instructor}
+                        {course.instructor_c || 'No Instructor'}
                       </p>
                     </div>
                     <div className="flex space-x-1">
@@ -412,28 +408,24 @@ const Courses = () => {
                         <ApperIcon name="Trash2" className="w-4 h-4 text-red-500" />
                       </Button>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-3">
+</div>
+                  <div className="space-y-3 mt-4">
                     <div className="flex items-center text-sm text-gray-600">
                       <ApperIcon name="Clock" className="w-4 h-4 mr-2" />
-                      {course.schedule}
+                      {course.schedule_c || 'No Schedule'}
                     </div>
-                    
                     <div className="flex items-center justify-between">
                       <div className="flex items-center text-sm text-gray-600">
                         <ApperIcon name="Award" className="w-4 h-4 mr-2" />
-                        {course.credits} Credit{course.credits !== 1 ? "s" : ""}
+                        {course.credits_c || 0} Credit{(course.credits_c || 0) !== 1 ? "s" : ""}
                       </div>
                       <Badge variant="secondary">
-                        {course.semester}
+                        {course.semester_c || 'No Semester'}
                       </Badge>
                     </div>
-                    
-                    {course.description && (
+                    {course.description_c && (
                       <p className="text-sm text-gray-600 line-clamp-2">
-                        {course.description}
+                        {course.description_c}
                       </p>
                     )}
                   </div>

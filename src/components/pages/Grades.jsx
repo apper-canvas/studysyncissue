@@ -1,21 +1,21 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-
 import { gradeService } from "@/services/api/gradeService";
 import { courseService } from "@/services/api/courseService";
-
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/atoms/Card";
-import Button from "@/components/atoms/Button";
-import Input from "@/components/atoms/Input";
-import Select from "@/components/atoms/Select";
-import Badge from "@/components/atoms/Badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/Card";
+import ApperIcon from "@/components/ApperIcon";
+import Courses from "@/components/pages/Courses";
 import ProgressBar from "@/components/molecules/ProgressBar";
 import StatCard from "@/components/molecules/StatCard";
-import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
+import Badge from "@/components/atoms/Badge";
+import Select from "@/components/atoms/Select";
+import Empty from "@/components/ui/Empty";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
-import Empty from "@/components/ui/Empty";
+
 
 const Grades = () => {
   const [grades, setGrades] = useState([]);
@@ -58,17 +58,17 @@ const Grades = () => {
     return courses.find(c => c.Id === courseId);
   };
 
-  const calculateCourseGrade = (courseId) => {
-    const courseGrades = grades.filter(g => g.courseId === courseId);
+const calculateCourseGrade = (courseId) => {
+    const courseGrades = grades.filter(g => (g.course_id_c?.Id || g.course_id_c) === courseId);
     let totalWeightedScore = 0;
     let totalWeight = 0;
 
     courseGrades.forEach(category => {
-      const completedAssignments = category.assignments.filter(a => a.grade !== null);
+      const completedAssignments = category.assignments?.filter(a => a.grade !== null) || [];
       if (completedAssignments.length > 0) {
         const categoryAverage = completedAssignments.reduce((sum, a) => sum + (a.grade / a.maxPoints * 100), 0) / completedAssignments.length;
-        totalWeightedScore += categoryAverage * category.weight;
-        totalWeight += category.weight;
+        totalWeightedScore += categoryAverage * (category.weight_c || 0);
+        totalWeight += (category.weight_c || 0);
       }
     });
 
@@ -101,10 +101,9 @@ const Grades = () => {
     }
   };
 
-  const filteredGrades = selectedCourse === "all" 
+const filteredGrades = selectedCourse === "all" 
     ? grades 
-    : grades.filter(g => g.courseId === parseInt(selectedCourse));
-
+    : grades.filter(g => (g.course_id_c?.Id || g.course_id_c) === parseInt(selectedCourse));
   const courseStats = courses.map(course => {
     const courseGrade = calculateCourseGrade(course.Id);
     return {
@@ -192,8 +191,8 @@ const Grades = () => {
               >
                 <option value="all">All Courses</option>
                 {courses.map(course => (
-                  <option key={course.Id} value={course.Id}>
-                    {course.code} - {course.name}
+<option key={course.Id} value={course.Id}>
+                    {course.code_c || 'N/A'} - {course.name_c || course.Name}
                   </option>
                 ))}
               </Select>
@@ -231,10 +230,11 @@ const Grades = () => {
           {/* Group grades by course */}
           {Object.entries(
             filteredGrades.reduce((acc, grade) => {
-              if (!acc[grade.courseId]) {
-                acc[grade.courseId] = [];
+const courseId = grade.course_id_c?.Id || grade.course_id_c;
+              if (!acc[courseId]) {
+                acc[courseId] = [];
               }
-              acc[grade.courseId].push(grade);
+              acc[courseId].push(grade);
               return acc;
             }, {})
           ).map(([courseId, courseGrades]) => {
@@ -250,9 +250,9 @@ const Grades = () => {
                 transition={{ duration: 0.3 }}
               >
                 <Card className="overflow-hidden">
-                  <div 
+<div 
                     className="h-1 w-full"
-                    style={{ backgroundColor: course?.color || "#6B7280" }}
+                    style={{ backgroundColor: course?.color_c || course?.color || "#6B7280" }}
                   ></div>
                   <CardHeader>
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -260,12 +260,12 @@ const Grades = () => {
                         <CardTitle className="flex items-center">
                           <div 
                             className="w-4 h-4 rounded-full mr-3" 
-                            style={{ backgroundColor: course?.color || "#6B7280" }}
+                            style={{ backgroundColor: course?.color_c || course?.color || "#6B7280" }}
                           ></div>
-                          {course?.name || "Unknown Course"}
+                          {course?.name_c || course?.Name || "Unknown Course"}
                         </CardTitle>
                         <p className="text-gray-600 mt-1">
-                          {course?.code} • {course?.instructor}
+                          {course?.code_c || 'N/A'} • {course?.instructor_c || 'No Instructor'}
                         </p>
                       </div>
                       <div className="flex items-center space-x-6">
@@ -290,11 +290,11 @@ const Grades = () => {
                   
                   <CardContent>
                     <div className="space-y-6">
-                      {courseGrades.map(category => (
+{courseGrades.map(category => (
                         <div key={category.Id} className="border border-gray-200 rounded-lg p-4">
                           <div className="flex items-center justify-between mb-4">
                             <h4 className="text-lg font-semibold text-gray-900">
-                              {category.categoryName}
+                              {category.category_name_c || category.Name}
                             </h4>
                             <Badge variant="secondary">
                               {category.weight}% of grade
@@ -302,7 +302,7 @@ const Grades = () => {
                           </div>
                           
                           <div className="space-y-3">
-                            {category.assignments.map(assignment => {
+{(category.assignments || []).map(assignment => {
                               const percentage = assignment.grade !== null ? (assignment.grade / assignment.maxPoints * 100) : null;
                               
                               return (
@@ -384,13 +384,13 @@ const Grades = () => {
                               <span className="text-sm font-medium text-gray-700">
                                 Category Average
                               </span>
-                              <span className="text-sm text-gray-600">
-                                {category.assignments.filter(a => a.grade !== null).length} of {category.assignments.length} graded
+<span className="text-sm text-gray-600">
+{(category.assignments || []).filter(a => a.grade !== null).length} of {(category.assignments || []).length} graded
                               </span>
                             </div>
                             <ProgressBar
-                              value={category.assignments.filter(a => a.grade !== null).length}
-                              max={category.assignments.length}
+                              value={(category.assignments || []).filter(a => a.grade !== null).length}
+                              max={(category.assignments || []).length}
                               variant="primary"
                               showLabel={false}
                             />

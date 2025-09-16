@@ -146,12 +146,12 @@ const stopTimer = async () => {
     }
 
     try {
-      const selectedCourse = courses.find(course => course.Id === parseInt(selectedSubject));
+const selectedCourse = courses.find(course => course.Id === parseInt(selectedSubject));
       const sessionData = {
-        subject: selectedCourse ? selectedCourse.courseName : 'Unknown Subject',
-        duration: time,
-        startTime: new Date(Date.now() - time * 1000).toISOString(),
-        endTime: new Date().toISOString()
+        subject_c: selectedCourse ? (selectedCourse.name_c || selectedCourse.Name) : 'Unknown Subject',
+        duration_c: time,
+        start_time_c: new Date(Date.now() - time * 1000).toISOString(),
+        end_time_c: new Date().toISOString()
       };
 
       await studySessionService.create(sessionData);
@@ -235,9 +235,9 @@ const resetTimer = () => {
             </div>
             <div className="text-sm text-gray-600">
               {isRunning ? (isPaused ? 'Paused' : 'Running') : 'Stopped'}
-              {selectedSubject && courses.find(c => c.Id === parseInt(selectedSubject)) && (
+{selectedSubject && courses.find(c => c.Id === parseInt(selectedSubject)) && (
                 <span className="block mt-1 font-medium text-primary-600">
-                  {courses.find(c => c.Id === parseInt(selectedSubject)).courseName}
+                  {courses.find(c => c.Id === parseInt(selectedSubject)).name_c || courses.find(c => c.Id === parseInt(selectedSubject)).Name}
                 </span>
               )}
             </div>
@@ -252,8 +252,8 @@ const resetTimer = () => {
             >
               <option value="">Choose a subject...</option>
               {courses.map(course => (
-                <option key={course.Id} value={course.Id}>
-                  {course.courseName}
+<option key={course.Id} value={course.Id}>
+                  {course.name_c || course.Name || 'Untitled Course'}
                 </option>
               ))}
             </Select>
